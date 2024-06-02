@@ -6,7 +6,7 @@ class lhc(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        label = tk.Label(self, text="Low to High-Pass and High to Low-Pass Conversion", font=("Helvetica", 18))
+        label = tk.Label(self, text="Low-Pass <-> High-Pass", font=("Helvetica", 18))
         label.pack(pady=10, padx=10)
 
         button = ttk.Button(self, text="Back to Main Window", command=lambda: controller.show_frame(MainWindow))

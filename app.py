@@ -6,17 +6,12 @@ from fir import fir
 from mov import mov
 from lhc import lhc
 
-# from frame2 import Frame2
-# from frame3 import Frame3
-# from frame4 import Frame4
-
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Tkinter Frame Stacking Example")
-        self.geometry("800x600")
+        self.title("DSP Finals")
+        self.geometry("1260x720")
 
-        # Create a container to hold all frames
         self.container = tk.Frame(self)
         self.container.pack(fill="both", expand=True)
 
