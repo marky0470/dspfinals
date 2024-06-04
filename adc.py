@@ -53,6 +53,7 @@ class ADC(tk.Frame):
         inputs = [child.entry.get() for child in parameterFrames]
         return inputs
         
+    #Checks if the input is an integer
     def testInt(self, input):
         try:
             text = int(input)
@@ -60,20 +61,24 @@ class ADC(tk.Frame):
         except ValueError:
             print("not an integer.")
     
+    #Generates the analog signal
     def getAnalogSignal(self, ampl, freq, time):
         anSig = ampl * np.sin(2 * math.pi * freq * time)
         return anSig
 
+    #Gets the index of the sampled signal
     def getIndex(self, samprate, t):
         sampleCount =int(len(t) * (samprate / (t[-1] - t[0])))
         index = np.linspace(0, len(t) - 1, sampleCount, dtype=int)
         return index
 
+    #Converts the sampled signal to digital
     def digitizeSig(self, anSig, index, threshold):
         sampledSig = anSig[index]
         digitalSig = np.where(sampledSig > threshold, 1, 0)
         return digitalSig
     
+    #Plots the analog and digital signals
     def plotTwo(self, anSig, index, digiSig, t):
         plt.figure(figsize=(6, 6))
 
@@ -95,6 +100,7 @@ class ADC(tk.Frame):
         
         plt.savefig('plot.png')
     
+    #Performs the operations on button click and displays the table
     def process(self):
         data = self.getInputs()
         
@@ -120,17 +126,6 @@ class ADC(tk.Frame):
         plot = ImageTk.PhotoImage(plot)
         self.outputLabel.config(image = plot)
         self.outputLabel.image = plot
-
-# if __name__ == "__main__":
-#     root = tk.Tk()
-#     controller = tk.Toplevel(root)
-#     root.geometry("1280x720")
-#     frame = ADC(root, controller)
-#     frame.pack(fill="both", expand=True)
-#     root.mainloop()
-
-
-
 
 
 
