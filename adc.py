@@ -20,15 +20,15 @@ class ADC(tk.Frame):
         self.rowconfigure(1, weight=4)
 
         # Header
-        self.headerFrame = tk.Frame(self, background="red")
+        self.headerFrame = tk.Frame(self, background="gray")
         self.headerFrame.grid(column=0,row=0,columnspan=2, sticky="nsew")
-        title = ttk.Label(self.headerFrame, text="Analog To Digital Converter", font=("Helvetica", 18), background="red")
+        title = ttk.Label(self.headerFrame, text="Analog To Digital Converter", font=("Helvetica", 18), background="gray")
         title.pack(side="left", padx=20)
         backButton = ttk.Button(self.headerFrame, text="Back", command=lambda: controller.show_frame(MainWindow))
         backButton.pack(side="right", padx=20)
         
         # Options side panel
-        self.optionsFrame = tk.Frame(self, background="blue")
+        self.optionsFrame = tk.Frame(self, background="light gray")
         self.optionsFrame.grid(column=1,row=1, sticky="nsew")
         
         timeField = ParameterFrame(self.optionsFrame, "Time", 0)
@@ -39,11 +39,11 @@ class ADC(tk.Frame):
         enterButton.grid(column=0,row=3, sticky="nsew", padx=20, pady=20)
 
         # Output frame
-        self.outputFrame = tk.Frame(self, background="pink")
+        self.outputFrame = tk.Frame(self, background="white")
         self.outputFrame.grid(column=0, row=1, sticky="nsew")
 
         # Where the any output images should go
-        self.outputLabel = ttk.Label(self.outputFrame, text="Output")
+        self.outputLabel = ttk.Label(self.outputFrame, background="white")
         self.outputLabel.pack(expand=True)
 
         
