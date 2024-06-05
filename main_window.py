@@ -29,7 +29,7 @@ class MainWindow(tk.Frame):
 
         button1 = ttk.Button(buttons_frame, width=40, text="Analog to Digital Converter", command=lambda: controller.show_frame(ADC))
         button2 = ttk.Button(buttons_frame, width=40, text="Finite Impulse Response", command=lambda: controller.show_frame(fir))
-        button3 = ttk.Button(buttons_frame, width=40, text="Moving Average", command=lambda: controller.show_frame(mov))
+        button3 = ttk.Button(buttons_frame, width=40, text="Moving Average", command=lambda: controller.show_frame(MOV))
         button4 = ttk.Button(buttons_frame, width=40, text="Low-Pass <-> High-Pass", command=lambda: controller.show_frame(lhc))
 
         button1.pack(padx=5, pady=5)
@@ -41,5 +41,5 @@ class MainWindow(tk.Frame):
 
 from adc import ADC
 from fir import fir
-from mov import mov
+from mov import MOV
 from lhc import lhc

@@ -3,7 +3,7 @@ from tkinter import ttk
 from main_window import MainWindow
 from adc import ADC
 from fir import fir
-from mov import mov
+from mov import MOV
 from lhc import lhc
 
 class App(tk.Tk):
@@ -24,7 +24,7 @@ class App(tk.Tk):
         self.show_frame(MainWindow)
 
     def create_frames(self):
-        for F in (MainWindow, ADC, fir, mov, lhc):
+        for F in (MainWindow, ADC, fir, MOV, lhc):
             frame = F(self.container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
