@@ -22,7 +22,7 @@ class FileSelector(tk.Frame):
         label = tk.Label(self, text=text)
         label.grid(column=0, row=0, sticky="w", pady=4)
 
-        file_button = ttk.Button(self, text="Select File", command=lambda: self.opendialog(parent))
+        file_button = ttk.Button(self, text="Browse", command=lambda: self.opendialog(parent))
         file_button.grid(column=0, row=1)
 
         self.grid(column=0, row=0+n, sticky="nsew", padx=20, pady=20)

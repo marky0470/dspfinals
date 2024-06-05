@@ -4,63 +4,123 @@ from tkinter import ttk
 from tkinter import filedialog
 import firImage
 from PIL import Image, ImageTk
-
-
+from util.parameterFrame import EnterButton
+from util.parameterFrame import FileSelector
+from util.parameterFrame import ParameterFrame
 
 class fir(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        self.input = None
-        self.filtered = None
+        self.passType = None
 
-        label = tk.Label(self, text="Finite Impulse Response", font=("Helvetica", 18))
-        label.grid(column=0, row=0, pady=10, padx=10, columnspan=2)
+        self.columnconfigure(0, weight=20)
+        self.columnconfigure(1, weight=1)
 
-        file_button = ttk.Button(self, text="Select File", command=lambda: self.opendialog())
-        file_button.grid(column=0, row=1, pady=10, padx=10, columnspan=2)
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=4)
 
-        label1 = tk.Label(self)
-        self.input_label = label1
-        label1.grid(column=0, row=2, pady=10, padx=10)
+        # Header
+        self.headerFrame = tk.Frame(self, background="red")
+        self.headerFrame.grid(column=0,row=0,columnspan=2, sticky="nsew")
+        title = ttk.Label(self.headerFrame, text="Custom Frame", font=("Helvetica", 18), background="red")
+        title.pack(side="left", padx=20)
+        backButton = ttk.Button(self.headerFrame, text="Back", command=lambda: controller.show_frame(MainWindow))
+        backButton.pack(side="right", padx=20)
+        
+        # Options side panel
+        self.optionsFrame = tk.Frame(self)
+        self.optionsFrame.grid(column=1,row=1, sticky="nsew")
+        self.optionsFrame.input = None
+      
+        selectedFile = FileSelector(self.optionsFrame, "Input File", 0)
+        self.field1 = ParameterFrame(self.optionsFrame, "Cutoff Frequency", 1)
+        self.field2 = ParameterFrame(self.optionsFrame, "Number of Taps", 2)
+        enterButton = EnterButton(self.optionsFrame, "Enter", command=lambda: self.process(), n=4)
 
-        label2 = tk.Label(self)
-        self.output_label = label2
-        label2.grid(column=1, row=2, pady=10, padx=10)
+        self.passTypeFrame = tk.Frame(self.optionsFrame)
+        self.passTypeFrame.grid(column=0,row=3, sticky="nsew", padx=20, pady=20)
+        self.lowPassButton = ttk.Radiobutton(self.passTypeFrame, text="Low Pass", variable=self.passType, value="low", command=lambda: self.setPassType("low"))
+        self.lowPassButton.pack(side="left", anchor="w")
+        self.highPassButton = ttk.Radiobutton(self.passTypeFrame, text="High Pass", variable=self.passType, value="high", command=lambda: self.setPassType("high"))
+        self.highPassButton.pack(side="left", anchor="w")
 
-        button = ttk.Button(self, text="Back to Main Window", command=lambda: controller.show_frame(MainWindow))
-        button.grid(column=0, row=3, pady=10, padx=10, columnspan=2)
+        self.errorLabel = ttk.Label(self.optionsFrame, text="", foreground="red")
+        self.errorLabel.grid(column=0, row=5, sticky="nsew", pady=20, padx=20)
+
+        # Output frame
+        self.outputFrame = tk.Frame(self, background="pink")
+        self.outputFrame.grid(column=0, row=1, sticky="nsew")
+
+        self.inputLabel = ttk.Label(self.outputFrame, text="")
+        self.inputLabel.pack(expand=True,side="left")
+        self.outputLabel = ttk.Label(self.outputFrame, text="")
+        self.outputLabel.pack(expand=True,side="right")
+
+    def setPassType(self, type):
+        self.passType = type
+
+    def getInputs(self):
+        optionsChildren = self.optionsFrame.winfo_children()
+        parameterFrames = [child for child in optionsChildren if isinstance(child, ParameterFrame)]
+        inputs = [child.entry.get() for child in parameterFrames]
+        return inputs
     
     def opendialog(self):
-        path = filedialog.askopenfilename(title="Select Audio or Image File",
-                                          filetypes=[("Image Files", image_extensions), ("Audio Files", audio_extensions)])
+        path = filedialog.askopenfilename(title="Select Audio or Image File", filetypes=[("Image Files", image_extensions), ("Audio Files", audio_extensions)])
+        self.input = path
+
+    def process(self):
+        inputs = self.getInputs()
+
+        path = self.optionsFrame.input
+        if path:
+            extension = os.path.splitext(path)[1].lower()
+        else:
+            self.errorLabel.config(text="File required")
+            return
+        isImage = extension in image_extensions
+
+        if self.passType is None:
+            self.errorLabel.config(text="Missing pass type")
+            return
+        if self.optionsFrame.input is None:
+            self.errorLabel.config(text="File required")
+            return
+        if '' in inputs and not isImage:
+            self.errorLabel.config(text="Missing parameters")
+            return
         
-        extension = os.path.splitext(path)[1].lower()
-        if extension in image_extensions:
+        self.errorLabel.config(text="")
 
-            input_image = Image.open(path)
-            
-            photo = ImageTk.PhotoImage(input_image)
-            self.input_label.config(image=photo)
-            self.input_label.image = photo
+        if isImage:
+            with Image.open(path) as inputImage:
+                self.updateImage(inputImage, True)
 
-            filtered_image = ImageTk.PhotoImage(firImage.filterImage(path))
-            self.output_label.config(image=filtered_image)
-            self.output_label.image = filtered_image
+            filteredImage = firImage.filterImage(path, self.passType)
+            self.updateImage(filteredImage, False)
 
-        elif extension in audio_extensions:
+        elif not isImage:
+            inputs = self.getInputs()
+            print(inputs)
 
-            audio_plot = FIRscript.plotAudio(path)
+            audioPlot = FIRscript.plotAudio(path)
+            self.updateImage(audioPlot, True)
 
-            photo = ImageTk.PhotoImage(audio_plot)
-            self.input_label.config(image=photo)
-            self.input_label.image = photo
+            filteredAudioPlot = FIRscript.filterAudio(path, self.passType, int(inputs[0]), int(inputs[1]))
+            self.updateImage(filteredAudioPlot, False)
+    
+    def updateImage(self, image, isInput):
+        photo = ImageTk.PhotoImage(image)
+        if not isInput:
+            self.outputLabel.config(image=None)
+            self.outputLabel.config(image=photo)
+            self.outputLabel.image = photo
+        else:
+            self.inputLabel.config(image=photo)
+            self.inputLabel.image = photo
 
-            filtered_audio_plot = FIRscript.filterAudio(path)
 
-            photo = ImageTk.PhotoImage(filtered_audio_plot)
-            self.output_label.config(image=photo)
-            self.output_label.image = photo
         
 
 image_extensions = ['.png', '.jpg', '.jpeg', '.bmp', '.gif']

@@ -20,20 +20,22 @@ class MainWindow(tk.Frame):
 
         self.mainFrame = tk.Frame(self, background = "black")
         label = ttk.Label(self, text="DSP Finals", font=("Helvetica", 18))
-        label.pack(pady=10, padx=10, expand=True)
+        label.pack(pady=100, padx=10)
 
         buttons_frame = tk.Frame(self, background = "yellow")
         buttons_frame.pack(pady=10)
+
+        LARGEFONT = ("Verdana", 20)
 
         button1 = ttk.Button(buttons_frame, width=40, text="Analog to Digital Converter", command=lambda: controller.show_frame(ADC))
         button2 = ttk.Button(buttons_frame, width=40, text="Finite Impulse Response", command=lambda: controller.show_frame(fir))
         button3 = ttk.Button(buttons_frame, width=40, text="Moving Average", command=lambda: controller.show_frame(mov))
         button4 = ttk.Button(buttons_frame, width=40, text="Low-Pass <-> High-Pass", command=lambda: controller.show_frame(lhc))
 
-        button1.grid(row=0, column=0, pady=10, padx=10)
-        button2.grid(row=0, column=1, pady=10, padx=10)
-        button3.grid(row=1, column=0, pady=10, padx=10)
-        button4.grid(row=1, column=1, pady=10, padx=10)
+        button1.pack(padx=5, pady=5)
+        button2.pack(padx=5, pady=5)
+        button3.pack(padx=5, pady=5)
+        button4.pack(padx=5, pady=5)
 
         self.pack(expand=True)
 
